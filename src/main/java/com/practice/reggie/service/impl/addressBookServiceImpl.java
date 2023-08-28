@@ -59,16 +59,17 @@ public class addressBookServiceImpl extends ServiceImpl<addressBookMapper, Addre
         queryWrapper.eq(AddressBook::getIsDefault,1);
 
         AddressBook one = super.getOne(queryWrapper);
-        one.setIsDefault(0);//修改默认
-        boolean b = super.updateById(one);
-        //3.修改当前地址为默认
-        addressBook.setIsDefault(1);
-        boolean b1 = super.updateById(addressBook);
+        if (one != null) {
+            one.setIsDefault(0);
+            boolean updateCurrentDefault = super.updateById(one);
 
-        if (b&&b1)
-        {
-            return true;
+            addressBook.setIsDefault(1);
+            boolean updateNewDefault = super.updateById(addressBook);
+
+            return updateCurrentDefault && updateNewDefault;
+        } else {
+            // 处理查询没有结果的情况，可能是因为找不到符合条件的默认地址
+            return false;
         }
-        return false;
     }
 }
