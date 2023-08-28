@@ -1,5 +1,6 @@
 package com.practice.reggie.service.impl;
 
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.practice.reggie.mapper.addressBookMapper;
@@ -27,16 +28,16 @@ public class addressBookServiceImpl extends ServiceImpl<addressBookMapper, Addre
         //1.拿到电话号码
         String phone = user.getPhone();
         //2.根据电话号码拿到userId，确定唯一身份 //使用LocalThread更好
-        LambdaQueryWrapper<User> queryWrapper=new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getPhone,phone);
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getPhone, phone);
         //用户处于可用状态
-        queryWrapper.eq(User::getStatus,1);
-        User one = userService.getOne(queryWrapper);
+        queryWrapper.eq(User::getStatus, 1);
+        User one = userService.getOne(queryWrapper,false);
         //3.根据userId查出属于该用户的所有地址
-        LambdaQueryWrapper<AddressBook> addressBookLambdaQueryWrapper=new LambdaQueryWrapper<>();
+        LambdaQueryWrapper<AddressBook> addressBookLambdaQueryWrapper = new LambdaQueryWrapper<>();
         addressBookLambdaQueryWrapper.eq(AddressBook::getUserId,one.getId());
         //没有被删除
-        addressBookLambdaQueryWrapper.eq(AddressBook::getIsDeleted,0);
+        addressBookLambdaQueryWrapper.eq(AddressBook::getIsDeleted, 0);
         List<AddressBook> list = this.list(addressBookLambdaQueryWrapper);
         //4.返回地址
         return list;
